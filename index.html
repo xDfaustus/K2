@@ -1,0 +1,1089 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banner Aldrich - Custom Showcase</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Noto+Sans+SC:wght@700;900&family=Inter:wght@400;600;800&display=swap');
+
+    :root {
+      --theme-glow: #ff2a4b;
+      --theme-shadow: #ff0033;
+      --theme-border: rgba(230,25,60,.6);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: Inter, sans-serif;
+      background: #050406;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .font-chinese { font-family: 'Noto Sans SC', sans-serif; }
+    .font-tech { font-family: Orbitron, sans-serif; }
+
+    .glow-red-heavy {
+      filter: drop-shadow(0 0 12px var(--theme-glow))
+              drop-shadow(0 0 25px var(--theme-shadow));
+    }
+
+    .text-glow-red {
+      text-shadow: 0 0 10px var(--theme-glow),
+                   0 0 20px var(--theme-shadow);
+    }
+
+    .text-glow-white {
+      text-shadow: 0 0 10px white,
+                   0 0 20px var(--theme-glow);
+    }
+
+    .clip-banner-tag {
+      clip-path: polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+    }
+
+    @keyframes fastPulse {
+      0%,100% { opacity: .9; transform: scale(1); }
+      50% { opacity: .4; transform: scale(.98); }
+    }
+
+    .animate-fast-pulse {
+      animation: fastPulse 1.2s infinite ease-in-out;
+    }
+
+    .glass-panel {
+      background: rgba(18,10,14,.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--theme-border);
+      transition: border-color .4s ease;
+    }
+
+    .friend-card {
+      min-width: 0;
+      background: rgba(23,23,23,.8);
+      border: 1px solid rgba(120,20,30,.4);
+      transition: .25s ease;
+    }
+
+    .friend-card:hover {
+      border-color: var(--theme-glow);
+      transform: translateY(-2px);
+    }
+
+    .friend-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: rgba(15,8,10,.5); }
+    ::-webkit-scrollbar-thumb {
+      background: var(--theme-glow);
+      border-radius: 4px;
+    }
+
+    #mainBanner {
+      isolation: isolate;
+    }
+
+    #bgCanvas {
+      z-index: 0;
+    }
+
+    /* Personaje: zona derecha, con posiciones válidas y glitch */
+    #characterLayer {
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: auto;
+      right: 0;
+      bottom: 0;
+      width: 55%;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    #mainCharacterImg {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: right center;
+      transform: translate(0, 0) scale(1);
+      filter: drop-shadow(0 0 12px var(--theme-glow))
+              drop-shadow(0 0 25px var(--theme-shadow));
+      animation: characterGlitch 5s infinite;
+      transition: filter .5s ease;
+      will-change: transform, filter, clip-path;
+    }
+
+    /* Glitch breve: separación RGB y cortes horizontales */
+    @keyframes characterGlitch {
+      0%, 86%, 100% {
+        transform: translate(0, 0) scale(1);
+        filter:
+          drop-shadow(0 0 12px var(--theme-glow))
+          drop-shadow(0 0 25px var(--theme-shadow));
+        clip-path: inset(0 0 0 0);
+      }
+
+      87% {
+        transform: translate(-4px, 1px) scale(1.005);
+        filter:
+          drop-shadow(4px 0 0 #00f0ff)
+          drop-shadow(-4px 0 0 #ff0033);
+        clip-path: inset(12% 0 68% 0);
+      }
+
+      88% {
+        transform: translate(4px, -1px) scale(1);
+        filter:
+          drop-shadow(-5px 0 0 #00f0ff)
+          drop-shadow(5px 0 0 #ff0033);
+        clip-path: inset(48% 0 32% 0);
+      }
+
+      89% {
+        transform: translate(-3px, 0) scale(1.003);
+        filter:
+          drop-shadow(3px 0 0 #00f0ff)
+          drop-shadow(-3px 0 0 var(--theme-glow));
+        clip-path: inset(75% 0 8% 0);
+      }
+
+      90% {
+        transform: translate(2px, 0);
+        filter:
+          drop-shadow(-2px 0 0 #00f0ff)
+          drop-shadow(2px 0 0 #ff0033);
+        clip-path: inset(30% 0 55% 0);
+      }
+
+      91%, 96% {
+        transform: translate(0, 0) scale(1);
+        clip-path: inset(0 0 0 0);
+      }
+
+      97% {
+        transform: translate(2px, 0);
+        clip-path: inset(30% 0 55% 0);
+      }
+
+      98%, 99% {
+        transform: translate(0, 0) scale(1);
+        clip-path: inset(0 0 0 0);
+      }
+    }
+
+    #characterAura {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at 70% 50%,
+        color-mix(in srgb, var(--theme-glow) 40%, transparent),
+        transparent 70%
+      );
+      filter: blur(24px);
+      pointer-events: none;
+    }
+
+    #mainContent {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Paneles de contenido más compactos */
+    #contentPanel {
+      min-height: 145px;
+      height: 145px;
+      padding: .75rem;
+    }
+
+    #content-amigos {
+      align-content: center;
+      grid-auto-rows: minmax(0, 1fr);
+    }
+
+    #content-amigos .friend-card {
+      padding: .35rem;
+      gap: .4rem;
+    }
+
+    #content-amigos .friend-card > div:first-child {
+      width: 30px;
+      height: 30px;
+    }
+
+    #content-sobremi {
+      font-size: .72rem;
+      line-height: 1.45;
+    }
+
+    #content-sobremi .info-card {
+      padding: .35rem;
+    }
+
+    @media (max-width: 767px) {
+      #mainBanner {
+        min-height: 850px;
+        aspect-ratio: auto;
+        padding: 20px;
+      }
+
+      #characterLayer {
+        width: 70%;
+        height: 52%;
+        top: 70px;
+        right: 0;
+        bottom: auto;
+        opacity: .52;
+      }
+
+      #mainCharacterImg {
+        object-position: right center;
+      }
+
+      #mainContent {
+        margin-top: 200px;
+        gap: 1rem;
+      }
+
+      #contentPanel {
+        min-height: 145px;
+        height: 145px;
+      }
+
+      #content-amigos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #musicPlayerBox {
+        position: relative;
+        z-index: 12;
+      }
+
+      #mainContent > div:first-child {
+        max-width: 100%;
+      }
+    }
+
+    @media (min-width: 768px) {
+      #mainBanner {
+        min-height: 580px;
+      }
+    }
+
+    /* Accesibilidad: reducir animaciones si el dispositivo lo solicita */
+    @media (prefers-reduced-motion: reduce) {
+      #mainCharacterImg,
+      .animate-fast-pulse {
+        animation-duration: 10s;
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-6 bg-neutral-950">
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div id="mainBanner"
+       class="relative w-full max-w-6xl aspect-[16/9] min-h-[580px]
+              bg-neutral-950 rounded-2xl overflow-hidden
+              border border-red-900/60
+              shadow-[0_0_50px_rgba(180,10,30,0.4)]
+              flex flex-col justify-between p-5 sm:p-10
+              select-none transition-all duration-500">
+
+    <!-- PARTÍCULAS -->
+    <canvas id="bgCanvas"
+            class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+
+    <!-- RAYOS -->
+    <svg class="absolute inset-0 w-full h-full pointer-events-none z-[1] opacity-80"
+         xmlns="http://www.w3.org/2000/svg"
+         preserveAspectRatio="none">
+      <path d="M 100 0 L 250 200 L 180 250 L 320 500 L 220 520 L 400 800"
+            stroke="#ff2a4b" stroke-width="3" fill="none"
+            class="animate-fast-pulse"
+            style="filter:drop-shadow(0 0 10px #ff0033)"/>
+      <path d="M 500 0 L 420 180 L 480 220 L 350 450 L 390 480 L 200 900"
+            stroke="#ff2a4b" stroke-width="4" fill="none"
+            style="filter:drop-shadow(0 0 15px #e6193c)"/>
+      <path d="M 800 0 L 720 280 L 780 350 L 650 600 L 710 680 L 550 900"
+            stroke="#ff1e43" stroke-width="3" fill="none"
+            class="animate-fast-pulse"
+            style="filter:drop-shadow(0 0 12px #ff0033)"/>
+    </svg>
+
+    <!-- FONDOS DEGRADADOS -->
+    <div class="absolute inset-0 pointer-events-none z-[1] overflow-hidden">
+      <div id="themeBgGradient"
+           class="absolute -top-20 -left-20 w-[60%] h-[140%]
+                  bg-gradient-to-r from-red-950/50 via-red-900/20 to-transparent
+                  -rotate-12 blur-sm transition-all duration-500"></div>
+      <div id="rightBgGradient"
+           class="absolute top-0 right-0 w-[55%] h-full
+                  bg-gradient-to-l from-red-900/30 via-red-950/10 to-transparent"></div>
+    </div>
+
+    <!-- SELECTOR DE COLORES -->
+    <div class="relative z-20 flex items-center justify-end">
+      <div id="colorSwatchBox"
+           class="flex items-center gap-2 bg-neutral-900/90
+                  border border-red-600/40 px-3 py-1.5 rounded-full
+                  text-xs font-mono text-gray-200
+                  shadow-[0_0_15px_rgba(230,25,60,0.3)]">
+
+        <i id="paletteIcon" class="fas fa-palette text-red-500 mr-1"></i>
+        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mr-1">
+          COLOR:
+        </span>
+
+        <button onclick="setTheme('red')" title="Carmesí"
+                class="w-4 h-4 rounded-full bg-red-600 hover:scale-125 transition border border-white/50"></button>
+        <button onclick="setTheme('cyan')" title="Cian"
+                class="w-4 h-4 rounded-full bg-cyan-500 hover:scale-125 transition border border-white/50"></button>
+        <button onclick="setTheme('purple')" title="Púrpura"
+                class="w-4 h-4 rounded-full bg-purple-600 hover:scale-125 transition border border-white/50"></button>
+        <button onclick="setTheme('gold')" title="Dorado"
+                class="w-4 h-4 rounded-full bg-amber-500 hover:scale-125 transition border border-white/50"></button>
+      </div>
+    </div>
+
+    <!-- PERSONAJE PRINCIPAL -->
+    <div id="characterLayer">
+      <div id="characterAura"></div>
+      <img id="mainCharacterImg"
+           src="https://i.ibb.co/YB02t5yW/500px-x-700px.png"
+           alt="Aldrich Character"
+           onerror="this.onerror=null;this.src='https://placehold.co/600x900/180a0e/ff2a4b?text=Aldrich'">
+    </div>
+
+    <!-- CONTENIDO ORIGINAL -->
+    <div id="mainContent"
+         class="relative z-10 grid grid-cols-1 md:grid-cols-12
+                gap-4 items-center my-auto">
+
+      <!-- COLUMNA IZQUIERDA -->
+      <div class="md:col-span-7 flex flex-col gap-3 max-w-xl">
+
+        <div class="relative">
+          <h1 class="font-chinese text-4xl sm:text-6xl font-black italic
+                     tracking-wide text-white text-glow-white leading-tight">
+            shirou
+          </h1>
+          <div id="subTitleText"
+               class="text-xs sm:text-sm font-tech tracking-[0.3em]
+                      text-red-500 font-bold uppercase mt-1">
+            Xatpace
+          </div>
+        </div>
+
+        <!-- ETIQUETA -->
+        <div id="characterBadge"
+             class="inline-flex items-center self-start
+                    bg-red-950/90 border-2 border-red-500
+                    text-white px-5 py-1.5 clip-banner-tag
+                    shadow-[0_0_20px_rgba(230,25,60,0.6)] my-1">
+
+          <span id="badgeDiamondLeft" class="text-red-400 mr-2 text-xs">◆</span>
+          <span class="font-chinese text-lg font-bold tracking-widest text-glow-red">
+            shirou
+          </span>
+          <span id="badgeDivider" class="mx-2 text-red-500 font-light">|</span>
+          <span class="font-tech text-sm font-extrabold tracking-wider text-red-200">
+            xatspace
+          </span>
+          <span id="badgeDiamondRight" class="text-red-400 ml-2 text-xs">◆</span>
+        </div>
+
+        <!-- PESTAÑAS -->
+        <div class="flex gap-2 mt-1">
+          <button onclick="switchTab('amigos')" id="tab-amigos"
+                  class="px-4 py-1.5 rounded-t-lg bg-red-600 text-white
+                         font-bold text-xs uppercase tracking-wider
+                         transition border-t border-x border-red-400">
+            <i class="fas fa-users mr-1"></i> AMIGOS
+          </button>
+
+          <button onclick="switchTab('sobremi')" id="tab-sobremi"
+                  class="px-4 py-1.5 rounded-t-lg bg-neutral-900/80
+                         text-gray-400 font-bold text-xs uppercase
+                         tracking-wider transition border-t border-x border-red-900/40">
+            <i class="fas fa-user-circle mr-1"></i> SOBRE MÍ
+          </button>
+        </div>
+
+        <!-- PANEL DE CONTENIDO COMPACTO -->
+        <div id="contentPanel"
+             class="glass-panel rounded-b-xl rounded-tr-xl shadow-2xl
+                    relative flex flex-col justify-center overflow-hidden">
+
+          <!-- AMIGOS -->
+          <div id="content-amigos"
+               class="grid grid-cols-3 gap-2 h-full overflow-y-auto pr-1">
+
+            <div class="friend-card group rounded-lg p-2 flex items-center gap-2 cursor-pointer">
+              <div class="w-9 h-9 rounded-full bg-neutral-800 overflow-hidden
+                          border border-red-500/50 flex-shrink-0">
+                <img id="friend-img-1"
+                     src="https://i.pravatar.cc/100?img=12"
+                     alt="Amigo 1">
+              </div>
+              <div class="min-w-0 truncate">
+                <p class="text-xs font-bold text-white truncate">Amigo 1</p>
+                <p class="text-[9px] text-gray-400">ONLINE</p>
+              </div>
+            </div>
+
+            <div class="friend-card group rounded-lg p-2 flex items-center gap-2 cursor-pointer">
+              <div class="w-9 h-9 rounded-full bg-neutral-800 overflow-hidden
+                          border border-red-500/50 flex-shrink-0">
+                <img id="friend-img-2"
+                     src="https://i.pravatar.cc/100?img=33"
+                     alt="Amigo 2">
+              </div>
+              <div class="min-w-0 truncate">
+                <p class="text-xs font-bold text-white truncate">Amigo 2</p>
+                <p class="text-[9px] text-gray-400">ONLINE</p>
+              </div>
+            </div>
+
+            <div class="friend-card group rounded-lg p-2 flex items-center gap-2 cursor-pointer">
+              <div class="w-9 h-9 rounded-full bg-neutral-800 overflow-hidden
+                          border border-red-500/50 flex-shrink-0">
+                <img id="friend-img-3"
+                     src="https://i.pravatar.cc/100?img=47"
+                     alt="Amigo 3">
+              </div>
+              <div class="min-w-0 truncate">
+                <p class="text-xs font-bold text-white truncate">Amigo 3</p>
+                <p class="text-[9px] text-gray-400">ONLINE</p>
+              </div>
+            </div>
+
+            <div class="friend-card group rounded-lg p-2 flex items-center gap-2 cursor-pointer">
+              <div class="w-9 h-9 rounded-full bg-neutral-800 overflow-hidden
+                          border border-red-500/50 flex-shrink-0">
+                <img id="friend-img-4"
+                     src="https://i.pravatar.cc/100?img=5"
+                     alt="Amigo 4">
+              </div>
+              <div class="min-w-0 truncate">
+                <p class="text-xs font-bold text-white truncate">Amigo 4</p>
+                <p class="text-[9px] text-gray-400">ONLINE</p>
+              </div>
+            </div>
+
+            <div class="friend-card group rounded-lg p-2 flex items-center gap-2 cursor-pointer">
+              <div class="w-9 h-9 rounded-full bg-neutral-800 overflow-hidden
+                          border border-red-500/50 flex-shrink-0">
+                <img id="friend-img-5"
+                     src="https://i.pravatar.cc/100?img=68"
+                     alt="Amigo 5">
+              </div>
+              <div class="min-w-0 truncate">
+                <p class="text-xs font-bold text-white truncate">Amigo 5</p>
+                <p class="text-[9px] text-gray-400">ONLINE</p>
+              </div>
+            </div>
+
+            <div class="friend-card group rounded-lg p-2 flex items-center gap-2 cursor-pointer">
+              <div class="w-9 h-9 rounded-full bg-neutral-800 overflow-hidden
+                          border border-red-500/50 flex-shrink-0">
+                <img id="friend-img-6"
+                     src="https://i.pravatar.cc/100?img=25"
+                     alt="Amigo 6">
+              </div>
+              <div class="min-w-0 truncate">
+                <p class="text-xs font-bold text-white truncate">Amigo 6</p>
+                <p class="text-[9px] text-gray-400">ONLINE</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- SOBRE MÍ -->
+          <div id="content-sobremi"
+               class="hidden text-xs sm:text-sm text-gray-300 space-y-2
+                      h-full overflow-y-auto pr-1">
+
+            <p class="leading-relaxed">
+              Un poderoso empuñador de reliquias envuelto en llamas carmesí.
+              Aldrich controla la tormenta roja y desata descargas eléctricas
+              destructivas contra sus oponentes.
+            </p>
+
+            <div class="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
+              <div class="">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPRODUCTOR MUSICAL ORIGINAL -->
+        <div id="musicPlayerBox"
+             class="bg-neutral-950/90 border border-red-600/50
+                    rounded-xl p-3 shadow-[0_0_20px_rgba(230,25,60,0.2)]
+                    flex flex-col gap-2 transition-all duration-300">
+
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+
+              <button id="prevTrackBtn"
+                      class="text-gray-400 hover:text-red-400 transition text-xs"
+                      aria-label="Canción anterior">
+                <i class="fas fa-backward-step"></i>
+              </button>
+
+              <button id="playBtn"
+                      class="w-8 h-8 flex-shrink-0 rounded-full bg-red-600
+                             hover:bg-red-500 text-white flex items-center
+                             justify-center shadow-[0_0_10px_rgba(230,25,60,0.8)]">
+                <i id="playIcon" class="fas fa-play text-xs ml-0.5"></i>
+              </button>
+
+              <button id="nextTrackBtn"
+                      class="text-gray-400 hover:text-red-400 transition text-xs"
+                      aria-label="Siguiente canción">
+                <i class="fas fa-forward-step"></i>
+              </button>
+
+              <div class="ml-1 min-w-0">
+                <select id="trackSelect"
+                        class="max-w-full bg-neutral-900 border border-red-900
+                               text-white text-xs font-bold rounded px-1.5 py-0.5">
+                  <option value="0">1. Aldrich's Awakening</option>
+                  <option value="1">2. Crimson Tempest</option>
+                  <option value="2">3. Gate of Shadows</option>
+                </select>
+
+                <div class="text-[9px] text-gray-400 flex items-center gap-2 mt-0.5">
+                  <span id="trackTime">00:00 / 03:45</span>
+                  <span id="hqBadge" class="text-red-500 font-mono">HQ AUDIO</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <i id="volumeIcon" class="fas fa-volume-high text-xs text-red-400"></i>
+              <input id="volumeSlider" type="range"
+                     min="0" max="1" step="0.01" value="0.7"
+                     class="w-16 accent-red-600 cursor-pointer"
+                     aria-label="Volumen">
+            </div>
+          </div>
+
+          <div id="progressBarContainer"
+               class="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden cursor-pointer"
+               title="Progreso de reproducción">
+            <div id="progressBar"
+                 class="bg-gradient-to-r from-red-600 to-red-400 h-full w-0 transition-all duration-200"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIE DEL BANNER -->
+    <div class="relative z-20 flex justify-between items-center gap-3
+                text-[10px] text-gray-500 font-mono pt-2
+                border-t border-red-900/30 mt-4">
+      <span>PERFIL OFICIAL - REVOLUTION AWAKENING</span>
+      <span id="footerStatus" class="text-red-500/80 text-right">
+        SISTEMA DE MÚSICA &amp; PARTÍCULAS ACTIVO
+      </span>
+    </div>
+  </div>
+
+  <script>
+    /* =========================
+       TEMAS DE COLOR
+    ========================= */
+
+    let activeThemeColor = '#ff2a4b';
+    let activeShadowColor = '#ff0033';
+
+    const themes = {
+      red: {
+        glow: '#ff2a4b',
+        shadow: '#ff0033',
+        mainBorder: 'rgba(180,10,30,.6)',
+        panelBorder: 'rgba(230,25,60,.6)',
+        bgGradient: 'from-red-950/50 via-red-900/20 to-transparent',
+        badgeBg: 'rgba(60,5,15,.9)',
+        badgeBorder: '#ef4444',
+        btnBg: '#dc2626',
+        btnBorder: '#f87171',
+        textHighlight: '#ef4444',
+        accentSlider: '#dc2626',
+        gradFrom: 'from-red-600',
+        gradTo: 'to-red-400',
+        ray: '#ff2a4b'
+      },
+      cyan: {
+        glow: '#00f0ff',
+        shadow: '#00a2ff',
+        mainBorder: 'rgba(0,162,255,.6)',
+        panelBorder: 'rgba(0,240,255,.6)',
+        bgGradient: 'from-cyan-950/50 via-cyan-900/20 to-transparent',
+        badgeBg: 'rgba(0,40,60,.9)',
+        badgeBorder: '#06b6d4',
+        btnBg: '#0891b2',
+        btnBorder: '#38bdf8',
+        textHighlight: '#06b6d4',
+        accentSlider: '#0891b2',
+        gradFrom: 'from-cyan-500',
+        gradTo: 'to-blue-400',
+        ray: '#00f0ff'
+      },
+      purple: {
+        glow: '#b026ff',
+        shadow: '#7000ff',
+        mainBorder: 'rgba(112,0,255,.6)',
+        panelBorder: 'rgba(176,38,255,.6)',
+        bgGradient: 'from-purple-950/50 via-purple-900/20 to-transparent',
+        badgeBg: 'rgba(35,5,50,.9)',
+        badgeBorder: '#a855f7',
+        btnBg: '#9333ea',
+        btnBorder: '#c084fc',
+        textHighlight: '#a855f7',
+        accentSlider: '#9333ea',
+        gradFrom: 'from-purple-600',
+        gradTo: 'to-fuchsia-400',
+        ray: '#b026ff'
+      },
+      gold: {
+        glow: '#ffb700',
+        shadow: '#ff6a00',
+        mainBorder: 'rgba(255,106,0,.6)',
+        panelBorder: 'rgba(255,183,0,.6)',
+        bgGradient: 'from-amber-950/50 via-amber-900/20 to-transparent',
+        badgeBg: 'rgba(45,25,0,.9)',
+        badgeBorder: '#f59e0b',
+        btnBg: '#d97706',
+        btnBorder: '#fbbf24',
+        textHighlight: '#f59e0b',
+        accentSlider: '#d97706',
+        gradFrom: 'from-amber-500',
+        gradTo: 'to-yellow-400',
+        ray: '#ffb700'
+      }
+    };
+
+    function setTheme(colorName) {
+      const t = themes[colorName] || themes.red;
+
+      activeThemeColor = t.glow;
+      activeShadowColor = t.shadow;
+
+      document.documentElement.style.setProperty('--theme-glow', t.glow);
+      document.documentElement.style.setProperty('--theme-shadow', t.shadow);
+      document.documentElement.style.setProperty('--theme-border', t.panelBorder);
+
+      const banner = document.getElementById('mainBanner');
+      banner.style.borderColor = t.mainBorder;
+      banner.style.boxShadow = `0 0 50px ${t.glow}44`;
+
+      document.getElementById('themeBgGradient').className =
+        `absolute -top-20 -left-20 w-[60%] h-[140%] bg-gradient-to-r ${t.bgGradient} -rotate-12 blur-sm transition-all duration-500`;
+
+      document.getElementById('rightBgGradient').style.background =
+        `linear-gradient(to left, ${t.glow}30, transparent)`;
+
+      document.getElementById('colorSwatchBox').style.borderColor = t.panelBorder;
+      document.getElementById('paletteIcon').style.color = t.textHighlight;
+      document.getElementById('subTitleText').style.color = t.textHighlight;
+      document.getElementById('footerStatus').style.color = t.textHighlight;
+
+      const badge = document.getElementById('characterBadge');
+      badge.style.backgroundColor = t.badgeBg;
+      badge.style.borderColor = t.badgeBorder;
+      badge.style.boxShadow = `0 0 20px ${t.glow}aa`;
+
+      document.getElementById('badgeDiamondLeft').style.color = t.textHighlight;
+      document.getElementById('badgeDiamondRight').style.color = t.textHighlight;
+      document.getElementById('badgeDivider').style.color = t.badgeBorder;
+
+      const musicBox = document.getElementById('musicPlayerBox');
+      musicBox.style.borderColor = t.panelBorder;
+      musicBox.style.boxShadow = `0 0 20px ${t.glow}33`;
+
+      const playBtn = document.getElementById('playBtn');
+      playBtn.style.backgroundColor = t.btnBg;
+      playBtn.style.boxShadow = `0 0 12px ${t.glow}`;
+
+      document.getElementById('trackSelect').style.borderColor = t.panelBorder;
+      document.getElementById('hqBadge').style.color = t.textHighlight;
+      document.getElementById('volumeIcon').style.color = t.textHighlight;
+      document.getElementById('volumeSlider').style.accentColor = t.accentSlider;
+
+      document.getElementById('progressBar').className =
+        `bg-gradient-to-r ${t.gradFrom} ${t.gradTo} h-full transition-all duration-200`;
+
+      document.querySelectorAll('svg path').forEach(path => {
+        path.setAttribute('stroke', t.ray);
+        path.style.filter = `drop-shadow(0 0 12px ${t.shadow})`;
+      });
+
+      document.querySelectorAll('.friend-card').forEach(card => {
+        card.style.borderColor = 'rgba(120,20,30,.4)';
+      });
+
+      document.querySelectorAll('.friend-avatar-border').forEach(avatar => {
+        avatar.style.borderColor = t.panelBorder;
+      });
+
+      document.querySelectorAll('.info-label').forEach(label => {
+        label.style.color = t.textHighlight;
+      });
+
+      updateTabStyles(activeTab, t);
+
+      particles.forEach(p => {
+        p.color = Math.random() > .3 ? activeThemeColor : '#ffffff';
+      });
+    }
+
+    /* =========================
+       PESTAÑAS
+    ========================= */
+
+    let activeTab = 'amigos';
+
+    function updateTabStyles(tabName, theme) {
+      const t = theme || themes.red;
+      const amigos = document.getElementById('tab-amigos');
+      const sobremi = document.getElementById('tab-sobremi');
+
+      [amigos, sobremi].forEach(tab => {
+        tab.style.backgroundColor = 'rgba(23,23,23,.8)';
+        tab.style.borderColor = 'rgba(120,20,30,.4)';
+        tab.style.boxShadow = 'none';
+        tab.style.color = '#9ca3af';
+      });
+
+      const selected = tabName === 'amigos' ? amigos : sobremi;
+      selected.style.backgroundColor = t.btnBg;
+      selected.style.borderColor = t.btnBorder;
+      selected.style.boxShadow = `0 -5px 15px ${t.glow}66`;
+      selected.style.color = '#fff';
+    }
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+
+      document.getElementById('content-amigos')
+        .classList.toggle('hidden', tabName !== 'amigos');
+
+      document.getElementById('content-sobremi')
+        .classList.toggle('hidden', tabName !== 'sobremi');
+
+      updateTabStyles(tabName, getActiveTheme());
+    }
+
+    function getActiveTheme() {
+      return Object.values(themes).find(t => t.glow === activeThemeColor)
+        || themes.red;
+    }
+
+    /* =========================
+       CANVAS Y PARTÍCULAS
+    ========================= */
+
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    const particles = [];
+    const burstParticles = [];
+    const particleCount = 45;
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.clientWidth;
+        this.y = Math.random() * canvas.clientHeight;
+        this.size = Math.random() * 2.5 + .5;
+        this.speedX = (Math.random() - .5) * 1.5;
+        this.speedY = -Math.random() * 2 - .5;
+        this.alpha = Math.random() * .8 + .2;
+        this.color = Math.random() > .3 ? activeThemeColor : '#ffffff';
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha -= .005;
+
+        if (this.alpha <= 0 || this.y < 0) {
+          this.reset();
+          this.y = canvas.clientHeight;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = activeShadowColor;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    class BurstParticle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 4 + 1.5;
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 5 + 2;
+
+        this.speedX = Math.cos(angle) * speed;
+        this.speedY = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.color = Math.random() > .2 ? activeThemeColor : '#ffffff';
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha -= .03;
+      }
+
+      draw() {
+        if (this.alpha <= 0) return;
+
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = activeShadowColor;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+
+    canvas.addEventListener('click', event => {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      for (let i = 0; i < 18; i++) {
+        burstParticles.push(new BurstParticle(x, y));
+      }
+    });
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      for (let i = burstParticles.length - 1; i >= 0; i--) {
+        const p = burstParticles[i];
+        p.update();
+        p.draw();
+
+        if (p.alpha <= 0) {
+          burstParticles.splice(i, 1);
+        }
+      }
+
+      if (Math.random() < .08) {
+        ctx.save();
+        ctx.strokeStyle = activeThemeColor;
+        ctx.lineWidth = Math.random() * 2 + 1;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = activeShadowColor;
+        ctx.beginPath();
+
+        let x = Math.random() * canvas.clientWidth;
+        let y = 0;
+        ctx.moveTo(x, y);
+
+        for (let i = 0; i < 5; i++) {
+          x += (Math.random() - .5) * 60;
+          y += Math.random() * (canvas.clientHeight / 5);
+          ctx.lineTo(x, y);
+        }
+
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    /* =========================
+       REPRODUCTOR ORIGINAL
+       Mantiene los controles y el contador visual.
+    ========================= */
+
+    const tracks = [
+      { name: "1. Aldrich's Awakening", duration: 225 },
+      { name: "2. Crimson Tempest", duration: 198 },
+      { name: "3. Gate of Shadows", duration: 240 }
+    ];
+
+    let currentTrackIndex = 0;
+    let isPlaying = false;
+    let playInterval = null;
+    let currentSeconds = 0;
+
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const trackSelect = document.getElementById('trackSelect');
+    const trackTime = document.getElementById('trackTime');
+    const progressBar = document.getElementById('progressBar');
+    const prevTrackBtn = document.getElementById('prevTrackBtn');
+    const nextTrackBtn = document.getElementById('nextTrackBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeIcon = document.getElementById('volumeIcon');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+
+    function formatTime(sec) {
+      const minutes = Math.floor(sec / 60);
+      const seconds = Math.floor(sec % 60);
+
+      return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    }
+
+    function updatePlayerUI() {
+      const duration = tracks[currentTrackIndex].duration;
+      trackTime.textContent =
+        `${formatTime(currentSeconds)} / ${formatTime(duration)}`;
+
+      progressBar.style.width = `${(currentSeconds / duration) * 100}%`;
+    }
+
+    function stopTimer() {
+      if (playInterval !== null) {
+        clearInterval(playInterval);
+        playInterval = null;
+      }
+    }
+
+    function startTimer() {
+      stopTimer();
+
+      playInterval = setInterval(() => {
+        currentSeconds++;
+
+        if (currentSeconds >= tracks[currentTrackIndex].duration) {
+          currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+          currentSeconds = 0;
+          trackSelect.value = currentTrackIndex;
+        }
+
+        updatePlayerUI();
+      }, 1000);
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+
+      if (isPlaying) {
+        playIcon.className = 'fas fa-pause text-xs';
+        startTimer();
+      } else {
+        playIcon.className = 'fas fa-play text-xs ml-0.5';
+        stopTimer();
+      }
+    }
+
+    function changeTrack(index) {
+      currentTrackIndex = Number(index);
+      currentSeconds = 0;
+      trackSelect.value = currentTrackIndex;
+
+      updatePlayerUI();
+
+      if (isPlaying) {
+        startTimer();
+      }
+    }
+
+    function nextTrack() {
+      changeTrack((currentTrackIndex + 1) % tracks.length);
+    }
+
+    function prevTrack() {
+      changeTrack((currentTrackIndex - 1 + tracks.length) % tracks.length);
+    }
+
+    playBtn.addEventListener('click', togglePlay);
+    nextTrackBtn.addEventListener('click', nextTrack);
+    prevTrackBtn.addEventListener('click', prevTrack);
+
+    trackSelect.addEventListener('change', event => {
+      changeTrack(event.target.value);
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      const volume = Number(volumeSlider.value);
+
+      volumeIcon.className = volume === 0
+        ? 'fas fa-volume-xmark text-xs'
+        : volume < .5
+          ? 'fas fa-volume-low text-xs'
+          : 'fas fa-volume-high text-xs';
+
+      volumeIcon.style.color = activeThemeColor;
+    });
+
+    progressBarContainer.addEventListener('click', event => {
+      const rect = progressBarContainer.getBoundingClientRect();
+      const fraction = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+
+      currentSeconds = Math.floor(
+        fraction * tracks[currentTrackIndex].duration
+      );
+
+      updatePlayerUI();
+    });
+
+    updatePlayerUI();
+    setTheme('red');
+  </script>
+</body>
+</html>
